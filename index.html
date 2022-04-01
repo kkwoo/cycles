@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>repl.it</title>
+	<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+	<div class="wrapper">
+		<div class="wholerow">
+			<b>Google Calendar: Cycle Log</b>
+		</div>
+		<div class="wholerow">
+			Click the button to set day 1 of a new cycle in your JadeBit Calendar.
+    </div>
+    <div class="lhs">
+      <div>
+        <button id="addDay1Btn">Set days 1-5 of a new cycle to JadeBit Calendar</button>
+      </div>
+      <div>
+        <button id="addDay26Btn">Set day 26 of a new cycle to JadeBit Calendar</button>
+      </div>
+      <div>
+        <button onclick="location.reload()">Reload</button>
+      </div>
+      <div>
+        <button id="revokeBtn" onclick="revokeToken();">Revoke access token</button>
+      </div>
+    </div>
+    <div class="rhs">
+      <div id="addStatus"></div>
+    </div>
+    <!--Add a button for the user to click to initiate auth sequence -->
+    <div id="inpagelog" class="wholerow">
+      log:<br/>
+    </div>
+  </div>
+    <script src="calendar_ex.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoadOkay()" onerror="gapiLoadFail(event)"></script>
+  <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoadOkay()" onerror="gisLoadFail(event)"></script>
+    <!-- ROLLBACK VALID TO 2023-03-31
+       <script src="https://apis.google.com/js/client.js?onload=handleClientLoad">
+    -->
+</script>
+</body>
+</html>
