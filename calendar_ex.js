@@ -74,6 +74,16 @@
       addDay1Button.style.visibility="visible";
       addDay26Button.style.visibility="visible";
       document.getElementById("revokeBtn").style.visibility="visible";
+
+      // set date field to today as a default
+      let now = new Date();
+      // toISOString is in UTC, but we want to use local time
+      // document.querySelector("#date").value = now.toISOString().slice(0,10);
+      let lpad20s = (x) => {return String(x).padStart(2, "0")};
+      document.querySelector("#date").value =
+        [lpad20s(now.getFullYear()),
+        lpad20s(now.getMonth() + 1),
+        lpad20s(now.getDate())].join('-');
     })();
 
     async function getToken(err) {
@@ -119,8 +129,8 @@
 
 // Make an API call to create an event.  Give feedback to user.
 function createDay1Event() {  
-  let day1 = new Date();
-  let day5 = new Date();
+  let day1 = new Date(document.querySelector("#date").value);
+  let day5 = new Date(document.querySelector("#date").value);
 
   day5.setDate(day5.getDate() + 5 - 1); // subtract 1 due to fencepost error
 
