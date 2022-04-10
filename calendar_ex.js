@@ -77,46 +77,43 @@
         lpad20s(now.getDate())].join('-');
     })();
 
-    async function getToken(err) {
+async function getToken(err) {
 
-      if (err.result.error.code == 401 || (err.result.error.code == 403) &&
-          (err.result.error.status == "PERMISSION_DENIED")) {
+  if (err.result.error.code == 401 || (err.result.error.code == 403) &&
+      (err.result.error.status == "PERMISSION_DENIED")) {
 
-        // The access token is missing, invalid, or expired, prompt for user consent to obtain one.
-        await new Promise((resolve, reject) => {
-          try {
-            // Settle this promise in the response callback for requestAccessToken()
-            tokenClient.callback = (resp) => {
-              if (resp.error !== undefined) {
-                reject(resp);
-              }
-              // GIS has automatically updated gapi.client with the newly issued access token.
-              inpagelog.innerHTML += `gapi.client access token: ${JSON.stringify(gapi.client.getToken().access_token)} <br>`; 
-              resolve(resp);
-            };
-            tokenClient.requestAccessToken();
-          } catch (err) {
-            console.log(err)
+    // The access token is missing, invalid, or expired, prompt for user consent to obtain one.
+    await new Promise((resolve, reject) => {
+      try {
+        // Settle this promise in the response callback for requestAccessToken()
+        tokenClient.callback = (resp) => {
+          if (resp.error !== undefined) {
+            reject(resp);
           }
-        });
-      } else {
-        // Errors unrelated to authorization: server errors, exceeding quota, bad requests, and so on.
-        throw new Error(err);
+          // GIS has automatically updated gapi.client with the newly issued access token.
+          inpagelog.innerHTML += `gapi.client access token: ${JSON.stringify(gapi.client.getToken().access_token)} <br>`; 
+          resolve(resp);
+        };
+        tokenClient.requestAccessToken();
+      } catch (err) {
+        console.log(err)
       }
-    }
+    });
+  } else {
+    // Errors unrelated to authorization: server errors, exceeding quota, bad requests, and so on.
+    throw new Error(err);
+  }
+}
 
-
-
-    function revokeToken() {
-      let cred = gapi.client.getToken();
-      if (cred !== null) {
-        google.accounts.oauth2.revoke(cred.access_token, () => { 
-          inpagelog.innerHTML += `Revoked: ${cred.access_token} <br>`;
-        });
-        gapi.client.setToken('');
-      }
-    }
-
+function revokeToken() {
+  let cred = gapi.client.getToken();
+  if (cred !== null) {
+    google.accounts.oauth2.revoke(cred.access_token, () => { 
+      inpagelog.innerHTML += `Revoked: ${cred.access_token} <br>`;
+    });
+    gapi.client.setToken('');
+  }
+}
 
 function renderTag(inputStr){
   inpagelog.innerHTML += `Added etag = ${JSON.stringify(inputStr)}<br/>`;
@@ -148,7 +145,7 @@ function createTwoEvents() {
   var event01 = {
     'calendarId': 'primary',
     'resource': {
-      "summary": "days 1-5",
+      "summary": `days 1-5 of ${dayStart.toISOString()}`,
       "start": {
         "dateTime": dayStart.toISOString()
       },
@@ -161,7 +158,7 @@ function createTwoEvents() {
   var event02 = {
     'calendarId': 'primary',
     'resource': {
-      "summary": "day 26 estimate",
+      "summary": `day 26 of ${dayStart.toISOString()}`,
       "start": {
         "dateTime": dayFar.toISOString()
       },
@@ -174,5 +171,5 @@ function createTwoEvents() {
   reqWretry(event01)
     .then(succ => reqWretry(event02))
     .then(succ => inpagelog.innerHTML += `END createTwoEventsviaPromise: ${JSON.stringify(err)}<br/>`)
-    .catch(err => inpagelog.innerHTML += `ERR createTwoEventsviaPromise: ${JSON.stringify(err)}<br/>`);
+    .catch(err => inpagelog.innerHTML += `CATCH-END createTwoEventsviaPromise: ${JSON.stringify(err)}<br/>`);
 }
