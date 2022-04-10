@@ -22,10 +22,11 @@
       document.getElementById("addDay26Btn").style.visibility="hidden";
       document.getElementById("revokeBtn").style.visibility="hidden";
       addBothButton.onclick = function(){
+        let currentText = addBothButton.innerHTML;
         addBothButton.innerHTML = "wait please";
         addStatus.innerHTML = "";
         createTwoEvents();
-        addBothButton.innerHTML = "Set days 1-5 and 26 of a new cycle to JadeBit";        
+        addBothButton.innerHTML = currentText;        
       };
       addDay1Button.onclick = function(){
         addDay1Button.innerHTML = "wait please";
@@ -80,8 +81,8 @@
         });
 
       addBothButton.style.visibility="visible";
-      addDay1Button.style.visibility="visible";
-      addDay26Button.style.visibility="visible";
+      // addDay1Button.style.visibility="visible";
+      // addDay26Button.style.visibility="visible";
       document.getElementById("revokeBtn").style.visibility="visible";
 
       // set date field to today as a default
@@ -233,13 +234,13 @@ function reqWretry(inpReq) {
     );
   }
 
-function createTwoEvents() {  
-  let dayStart = new Date();
-  let dayEnd = new Date();
-  dayEnd.setDate(dayEnd.getDate() + 2 - 1); // subtract 1 due to fencepost error
+function createTwoEvents() {
+  let dayStart = new Date(document.querySelector("#date").value);
+  let dayEnd = new Date(document.querySelector("#date").value);
+  dayEnd.setDate(dayEnd.getDate() + 5 - 1); // subtract 1 due to fencepost error
 
-  let dayFar = new Date();
-  dayFar.setDate(dayFar.getDate() + 3 - 1); // subtract 1 due to fencepost error
+  let dayFar = new Date(document.querySelector("#date").value);
+  dayFar.setDate(dayFar.getDate() + 26 - 1); // subtract 1 due to fencepost error
 
   inpagelog.innerHTML += `START createTwoEventsviaPromise: <br/>`;
   addStatus.innerHTML += `adding two events<br/>`;
