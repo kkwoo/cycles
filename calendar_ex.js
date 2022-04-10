@@ -10,16 +10,12 @@
 
     var tokenClient;
     var addBothButton = document.getElementById('addBothBtn');
-    var addDay1Button = document.getElementById('addDay1Btn');
-    var addDay26Button = document.getElementById('addDay26Btn');
     var addStatus = document.getElementById('addStatus');
     var inpagelog = document.getElementById('inpagelog');   
     var timeWindow = {};
 
     (async () => {
       document.getElementById("addBothBtn").style.visibility="hidden";
-      document.getElementById("addDay1Btn").style.visibility="hidden";
-      document.getElementById("addDay26Btn").style.visibility="hidden";
       document.getElementById("revokeBtn").style.visibility="hidden";
       addBothButton.onclick = function(){
         let currentText = addBothButton.innerHTML;
@@ -28,19 +24,6 @@
         createTwoEvents();
         addBothButton.innerHTML = currentText;        
       };
-      addDay1Button.onclick = function(){
-        addDay1Button.innerHTML = "wait please";
-        addStatus.innerHTML = "";
-        createDay1Event();
-        addDay1Button.innerHTML = "Set days 1-5 of a new cycle to JadeBit";        
-      };
-      addDay26Button.onclick = function(){
-        addDay26Button.innerHTML = "wait please";
-        addStatus.innerHTML = "";
-        createDay26Event();
-        addDay26Button.innerHTML = "Set day 26 of a new cycle to JadeBit";
-      };
- 
       
       // First, load and initialize the gapi.client
       await gapiLoadPromise;
@@ -81,8 +64,6 @@
         });
 
       addBothButton.style.visibility="visible";
-      // addDay1Button.style.visibility="visible";
-      // addDay26Button.style.visibility="visible";
       document.getElementById("revokeBtn").style.visibility="visible";
 
       // set date field to today as a default
@@ -136,87 +117,6 @@
       }
     }
 
-
-// Make an API call to create an event.  Give feedback to user.
-function createDay1Event() {  
-  let day1 = new Date(document.querySelector("#date").value);
-  let day5 = new Date(document.querySelector("#date").value);
-
-  day5.setDate(day5.getDate() + 5 - 1); // subtract 1 due to fencepost error
-
-  inpagelog.innerHTML += `START createEvent: <br/>`;
-  addStatus.innerHTML += `adding day1-5<br/>`;
-  // 20210406: add .replace(/-/g, '/') for iphone compatibility
-    var resource = {
-        "summary": "days 1-5",
-        "start": {
-          "dateTime": day1.toISOString()
-        },
-         "end": {
-          "dateTime": day5.toISOString()
-          }
-        };
-
-      var request = gapi.client.calendar.events.insert({
-        'calendarId': 'primary',
-        'resource': resource      })
-      .then(calendarAPIResponse => {
-        inpagelog.innerHTML += `Added etag = ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-        addStatus.innerHTML += `Added etag =  ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-      })
-      .catch(err  => getToken(err) // only retry insert on calling getToken
-        .then(retry => gapi.client.calendar.events.insert({ 'calendarId': 'primary',
-                                                        'resource': resource }))
-        .then(calendarAPIResponse => {
-          inpagelog.innerHTML += `Added etag =  ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-          addStatus.innerHTML += `Added etag =  ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-
-        })
-        .catch(err  => console.log(err)));  // for authorization errors obtain an access token
-
-  inpagelog.innerHTML += `END createEvent: <br/>`;
-
-}
-
-// Make an API call to create an event.  Give feedback to user.
-function createDay26Event() {  
-  let day26 = new Date();
-
-  day26.setDate(day26.getDate() + 26 - 1); // subtract 1 due to fencepost error
-
-  inpagelog.innerHTML += `START createEvent: <br/>`;
-  addStatus.innerHTML += `adding day26<br/>`;
-  // 20210406: add .replace(/-/g, '/') for iphone compatibility
-    var resource = {
-        "summary": "day 26 estimate",
-        "start": {
-          "dateTime": day26.toISOString()
-        },
-         "end": {
-          "dateTime": day26.toISOString()
-          }
-        };
-
-      var request = gapi.client.calendar.events.insert({
-        'calendarId': 'primary',
-        'resource': resource      })
-      .then(calendarAPIResponse => {
-        inpagelog.innerHTML += `Added etag = ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-        addStatus.innerHTML += `Added etag =  ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-      })
-      .catch(err  => getToken(err) // only retry insert on calling getToken
-        .then(retry => gapi.client.calendar.events.insert({ 'calendarId': 'primary',
-                                                        'resource': resource }))
-        .then(calendarAPIResponse => {
-          inpagelog.innerHTML += `Added etag =  ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-          addStatus.innerHTML += `Added etag =  ${JSON.stringify(calendarAPIResponse.result.etag)}<br/>`;
-
-        })
-        .catch(err  => console.log(err)));  // for authorization errors obtain an access token
-
-  inpagelog.innerHTML += `END createEvent: <br/>`;
-
-}
 
 function renderTag(inputStr){
   inpagelog.innerHTML += `Added etag = ${JSON.stringify(inputStr)}<br/>`;
