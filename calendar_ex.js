@@ -9,6 +9,7 @@
     });
 
     var tokenClient;
+    var addBothButton = document.getElementById('addBothBtn');
     var addDay1Button = document.getElementById('addDay1Btn');
     var addDay26Button = document.getElementById('addDay26Btn');
     var addStatus = document.getElementById('addStatus');
@@ -16,21 +17,28 @@
     var timeWindow = {};
 
     (async () => {
+      document.getElementById("addBothBtn").style.visibility="hidden";
       document.getElementById("addDay1Btn").style.visibility="hidden";
       document.getElementById("addDay26Btn").style.visibility="hidden";
       document.getElementById("revokeBtn").style.visibility="hidden";
+      addBothButton.onclick = function(){
+        addBothButton.innerHTML = "wait please";
+        addStatus.innerHTML = "";
+        createTwoEvents();
+        addBothButton.innerHTML = "Set days 1-5 and 26 of a new cycle to JadeBit";        
+      };
       addDay1Button.onclick = function(){
         addDay1Button.innerHTML = "wait please";
         addStatus.innerHTML = "";
         createDay1Event();
         addDay1Button.innerHTML = "Set days 1-5 of a new cycle to JadeBit";        
-      }
+      };
       addDay26Button.onclick = function(){
         addDay26Button.innerHTML = "wait please";
         addStatus.innerHTML = "";
         createDay26Event();
         addDay26Button.innerHTML = "Set day 26 of a new cycle to JadeBit";
-      }
+      };
  
       
       // First, load and initialize the gapi.client
@@ -71,6 +79,7 @@
           }
         });
 
+      addBothButton.style.visibility="visible";
       addDay1Button.style.visibility="visible";
       addDay26Button.style.visibility="visible";
       document.getElementById("revokeBtn").style.visibility="visible";
@@ -206,4 +215,63 @@ function createDay26Event() {
 
   inpagelog.innerHTML += `END createEvent: <br/>`;
 
+}
+
+function renderTag(inputStr){
+  inpagelog.innerHTML += `Added etag = ${JSON.stringify(inputStr)}<br/>`;
+  addStatus.innerHTML += `Added etag = ${JSON.stringify(inputStr)}<br/>`;  
+}
+
+function reqWretry(inpReq) {
+    return(
+      gapi.client.calendar.events.insert(inpReq)
+      .then(calendarAPIResponse => renderTag(calendarAPIResponse.result.etag))
+      .catch(err  => getToken(err)
+        .then(succ => gapi.client.calendar.events.insert(inpReq))
+             .then(calendarAPIResponse => renderTag(calendarAPIResponse.result.etag))
+      ) // only retry insert on calling getToken
+    );
+  }
+
+function createTwoEvents() {  
+  let dayStart = new Date();
+  let dayEnd = new Date();
+  dayEnd.setDate(dayEnd.getDate() + 2 - 1); // subtract 1 due to fencepost error
+
+  let dayFar = new Date();
+  dayFar.setDate(dayFar.getDate() + 3 - 1); // subtract 1 due to fencepost error
+
+  inpagelog.innerHTML += `START createTwoEventsviaPromise: <br/>`;
+  addStatus.innerHTML += `adding two events<br/>`;
+  
+  var event01 = {
+    'calendarId': 'primary',
+    'resource': {
+      "summary": "days 1-5",
+      "start": {
+        "dateTime": dayStart.toISOString()
+      },
+       "end": {
+        "dateTime": dayEnd.toISOString()
+        }
+      }
+  };
+
+  var event02 = {
+    'calendarId': 'primary',
+    'resource': {
+      "summary": "day 26 estimate",
+      "start": {
+        "dateTime": dayFar.toISOString()
+      },
+       "end": {
+        "dateTime": dayFar.toISOString()
+        }
+      }
+  };
+  
+  reqWretry(event01)
+    .then(succ => reqWretry(event02))
+    .then(succ => inpagelog.innerHTML += `END createTwoEventsviaPromise: ${JSON.stringify(err)}<br/>`)
+    .catch(err => inpagelog.innerHTML += `ERR createTwoEventsviaPromise: ${JSON.stringify(err)}<br/>`);
 }
