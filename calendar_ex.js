@@ -47,7 +47,8 @@
         await new Promise((resolve, reject) => {
           try {
             tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: '874197785085-7dmuhb7o48i77kbajmfs7nr015sd07sf.apps.googleusercontent.com',
+                // client_id: '874197785085-7dmuhb7o48i77kbajmfs7nr015sd07sf.apps.googleusercontent.com',
+                client_id: '544929542748-dkgbk9a605lr9uj3l3puf2efcpqpc9p0.apps.googleusercontent.com',
                 scope: 'https://www.googleapis.com/auth/calendar.events.owned',
                 /* is prompt=consent causing the extra check?  https://developers.google.com/identity/oauth2/web/guides/use-token-model
 
